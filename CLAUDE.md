@@ -78,3 +78,41 @@ Required environment variables in `.env`:
 - For Windows users, Git Bash is recommended for running commands
 - Always use uv to run the server, do not use pip
 - use uv to run Python files
+
+## Development Environment Debugging
+
+When mysterious application behavior persists across restarts (code changes not taking effect, inconsistent responses, hot reload not working):
+
+**1. Check Running Processes FIRST**
+```bash
+# Windows
+tasklist | findstr python
+tasklist | findstr uvicorn
+
+# Linux/Mac
+ps aux | grep python
+ps aux | grep uvicorn
+```
+
+**2. Complete Process Cleanup**
+```bash
+# Windows
+taskkill //F //IM python.exe
+taskkill //F //IM uvicorn.exe
+
+# Linux/Mac
+pkill -f python
+pkill -f uvicorn
+```
+
+**3. Clean Environment Rebuild**
+```bash
+find . -name "*.pyc" -delete
+find . -name "__pycache__" -type d -exec rm -rf {} +
+rm -rf .venv
+uv cache clean
+uv sync
+./run.sh
+```
+
+**Principle**: Modern development tools create process trees that survive shell termination. Always verify actual process cleanup before debugging application logic.
